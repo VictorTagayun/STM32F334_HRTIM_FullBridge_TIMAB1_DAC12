@@ -550,61 +550,6 @@ static void HRTIM1_Start_Output(void)
 	HAL_HRTIM_WaveformCounterStart_IT(&hhrtim1, HRTIM_TIMERID_MASTER | HRTIM_TIMERID_TIMER_A | HRTIM_TIMERID_TIMER_B);
 }
 
-int32_t PI_Controller(void)
-{
-  /* Local variable used to prevent compilation warning */
-  //uint32_t lVoutT = VoutT;
-
-  /* Compute PI for Buck Mode */
-  /* Every time the PI order sets extreme values then CTMax or CTMin are managed */
-//  int32_t seterr, pid_out;
-//  int32_t error;
-
-  VoutConversion = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1);
-
-  error = (int32_t ) VoutConversion - (int32_t) VoutT;
-  seterr = (-Kp * error) / 200;
-
-  Int_term_Buck = Int_term_Buck + ((-Ki * error) / 200);
-
-//  if (Int_term_Buck > SAT_LIMIT)
-//  {
-//    Int_term_Buck = SAT_LIMIT;
-//  }
-//  if (Int_term_Buck < -(SAT_LIMIT))
-//  {
-//    Int_term_Buck = -(SAT_LIMIT);
-//  }
-
-  pid_out = seterr + Int_term_Buck;
-
-  if (pid_out >= MAX_DUTY)
-  {
-    pid_out = MAX_DUTY;
-    CTMax++;
-  }
-  else
-  {
-    if (CTMax != 0)
-    {
-      CTMax--;
-    }
-  }
-  if (pid_out <= MIN_DUTY)
-  {
-    pid_out = MIN_DUTY;
-    CTMin++;
-  }
-  else
-  {
-    if (CTMin != 0)
-    {
-      CTMin--;
-    }
-  }
-  return  pid_out;
-}
-
 int32_t my_PID_Controller(void)
 {
 
